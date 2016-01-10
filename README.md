@@ -12,7 +12,7 @@ The entire codebase is located in `index.js`. You can either copy that file dire
 
 ## API
 
-The API consists of four methods:
+The API consists of four methods, each of which returns a `Promise`:
 
 - `get(url, payload, options)`
 - `post(url, payload, options)`
