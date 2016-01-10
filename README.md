@@ -33,15 +33,16 @@ This is an object that looks like the following:
 
     {
 	    onBeforeSend: function (request, verb, url) {
-			// This function is called before the request is sent
-			// request contains the raw XMLHttpRequest object.
-			// verb contains the string of the HTTP verb being used ("GET", "POST", etc.).
-			// url contains the url to which the request is being sent.
+			// Modify the request object.
 		},
 		returnRawResponse: true
 	}
 
-`onBeforeSend` is called when the XMLHttpRequest object is constructed, just before it is sent, and allows you to modify the request. If you need to set HTTP headers, this is where you do it.
+`onBeforeSend` is called when the XMLHttpRequest object is constructed, just before it is sent, and allows you to modify the request. If you need to set HTTP headers, this is where you do it. The method takes three arguments:
+
+- `request` contains the raw XMLHttpRequest object.
+- `verb` contains the string of the HTTP verb being used ("GET", "POST", etc.).
+- `url` contains the url to which the request is being sent.
 
 `returnRawResponse`, when true, prevents the response from being deserialized as JSON into a JavaScript object.
 
@@ -78,8 +79,7 @@ This is an object that looks like the following:
 			// Handle the error.
 		});
 		
-	// Make a DELETE request to https://www.example.com and do not
-	// deserialize the response.	
+	// Make a DELETE request to https://www.example.com and do not deserialize the response.	
 	ajax.post("https://www.example.com", null, {returnRawResponse: true})
 		.then(function (response) {
 			// Do something.
