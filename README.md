@@ -1,4 +1,4 @@
-# dead-simple-ajax
+# dead-simple-ajax [![Build Status](https://travis-ci.org/levibotelho/dead-simple-ajax.svg?branch=master)](https://travis-ci.org/levibotelho/dead-simple-ajax)
 
 dead-simple-ajax does three things:
 
@@ -49,7 +49,7 @@ An object that looks like the following:
 ## Example
 
     var ajax = require("dead-simple-ajax");
-	
+
 	// Make a GET request to https://www.example.com?foo=bar.
 	ajax.get("https://www.example.com", {foo: "bar"})
 		.then(function (response) {
@@ -57,7 +57,7 @@ An object that looks like the following:
 		}, function (error) {
 			// Handle the error.
 		});
-		
+
 	// Make a POST request to https://www.example.com with a JSON payload of `{foo: "bar"}`.
 	ajax.post("https://www.example.com", {foo: "bar"})
 		.then(function (response) {
@@ -65,21 +65,21 @@ An object that looks like the following:
 		}, function (error) {
 			// Handle the error.
 		});
-		
+
 	// Make a PUT request to https://www.example.com with a JSON payload of `{foo: "bar"}`,
 	// and set the Authorization header before sending.
 	function setHeader(request, verb, url) {
 		request.setRequestHeader("Authorization", "supersecretvalue");
 	}
-	
+
 	ajax.post("https://www.example.com", {foo: "bar"}, {onBeforeSend: setHeader})
 		.then(function (response) {
 			// Do something.
 		}, function (error) {
 			// Handle the error.
 		});
-		
-	// Make a DELETE request to https://www.example.com and do not deserialize the response.	
+
+	// Make a DELETE request to https://www.example.com and do not deserialize the response.
 	ajax.post("https://www.example.com", null, {returnRawResponse: true})
 		.then(function (response) {
 			// Do something.
