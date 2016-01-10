@@ -54,17 +54,22 @@ function wrapRequestInPromise(request, returnRawResponse) {
 
 function sendRequest(verb, url, encodedPayload, options) {
 	var request = new XMLHttpRequest();
-	var promise = wrapRequestInPromise(request, options.returnRawResponse);
+	var returnRawResponse, onBeforeSend;
+	if (options != null) {
+		returnRawResponse = options.returnRawResponse;
+		onBeforeSend = options.onBeforeSend
+	}
+	var promise = wrapRequestInPromise(request, returnRawResponse);
 
 	request.open(verb, url, true);
 
 	var jsonMIMEType = "application/json";
 	request.setRequestHeader("Accept", jsonMIMEType);
 	request.setRequestHeader("Content-Type", jsonMIMEType + ";charset=UTF-8");
-	if (typeof options.onBeforeSend === "function") {
-		options.onBeforeSend(request, verb, url)
+	if (typeof onBeforeSend === "function") {
+		onBeforeSend(request, verb, url)
 	}
-	
+
 	request.send(encodedPayload);
 	return promise;
 }
