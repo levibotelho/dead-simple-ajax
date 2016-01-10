@@ -1,0 +1,21 @@
+{
+	extends: "eslint:recommended",
+	env: {
+		"browser": true,
+		"node": true
+	},
+	rules: {
+		"brace-style": [2, "1tbs"],
+		"comma-style": 2,
+		"eol-last": 0,
+		"indent": [2, "tab", {"SwitchCase": 1}],
+		"jsx-quotes": 2,
+		"no-console": 0,
+		"no-else-return": 2,
+		"no-mixed-spaces-and-tabs": [2, "smart-tabs"],
+		"no-multi-spaces": 0,
+		"no-throw-literal": 2,
+		"no-underscore-dangle": 0,
+		"strict": [2, "global"]
+	}
+}

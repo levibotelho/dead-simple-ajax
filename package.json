@@ -1,0 +1,32 @@
+{
+  "name": "dead-simple-ajax",
+  "version": "1.0.0",
+  "description": "Ajax. That's it.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeviBotelho/dead-simple-ajax.git"
+  },
+  "keywords": [
+    "ajax",
+    "nodejs",
+    "browserify",
+    "commonjs"
+  ],
+  "author": "Levi Botelho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LeviBotelho/dead-simple-ajax/issues"
+  },
+  "homepage": "https://github.com/LeviBotelho/dead-simple-ajax#readme",
+  "dependencies": {
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-eslint": "^1.1.1"
+  }
+}
