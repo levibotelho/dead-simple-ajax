@@ -19,15 +19,15 @@ The API consists of four methods:
 - `put(url, payload, options)`
 - `del(url, payload, options)`
 
-*url*: `string`
+**url**: `string`
 
 The URL to which the request will be sent.
 
-*payload*: `object`
+**payload**: `object`
 
 An object that will be turned into a query string in the case of `get`, or JSON-serialized into the request payload for `post`, `put`, and `del`.
 
-*options*: `object`
+**options**: `object`
 
 An object that looks like the following:
 
