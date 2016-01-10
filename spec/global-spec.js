@@ -27,10 +27,31 @@ describe("The get method", function () {
 	it("works", function (done) {
 		var ajax = getStubbedAjax();
 		ajax.get("http://www.example.com")
-			.then(function () {
-				done();
-			}, function () {
-				fail();
-			})
+			.then(done, fail);
+	});
+});
+
+describe("The post method", function () {
+	it("works", function (done) {
+		var ajax = getStubbedAjax();
+		ajax.post("http://www.example.com")
+			.then(done, fail);
+	});
+});
+
+
+describe("The put method", function () {
+	it("works", function (done) {
+		var ajax = getStubbedAjax();
+		ajax.put("http://www.example.com")
+			.then(done, fail);
+	});
+});
+
+describe("The del method", function () {
+	it("works", function (done) {
+		var ajax = getStubbedAjax();
+		ajax.del("http://www.example.com")
+			.then(done, fail);
 	});
 });
