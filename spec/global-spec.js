@@ -29,12 +29,7 @@ var ajax = proxyquire("../index.js", {
 	}
 });
 
-describe("The get method", function () {
-	beforeAll(function (done) {
-		ajax.get(exampleUrl)
-			.then(done, fail);
-	});
-
+function runBasicTests(verb) {
 	it("works", function () {});
 
 	it("opens the web request", function () {
@@ -49,12 +44,8 @@ describe("The get method", function () {
 		expect(headers.Accept).toBe("application/json");
 	});
 
-	it("does not set the Content-Type header", function () {
-		expect(headers["Content-Type"]).toBe(undefined);
-	});
-
-	it("opens the connection with the GET verb", function () {
-		expect(calledVerb).toBe("GET");
+	it("opens the connection with the " + verb + " verb", function () {
+		expect(calledVerb).toBe(verb);
 	});
 
 	it("opens the connection to the correct URL", function () {
@@ -63,6 +54,19 @@ describe("The get method", function () {
 
 	it("opens the connection as async", function () {
 		expect(openedAsync).toBe(true);
+	});
+}
+
+describe("The get method", function () {
+	beforeAll(function (done) {
+		ajax.get(exampleUrl)
+			.then(done, fail);
+	});
+
+	runBasicTests("GET");
+
+	it("does not set the Content-Type header", function () {
+		expect(headers["Content-Type"]).toBe(undefined);
 	});
 
 	describe("calls the onBeforeSend callback", function () {
@@ -112,11 +116,72 @@ describe("The get method", function () {
 	});
 });
 
+function runContentTypeHeaderTestsForPostPutDel() {
+	it("does not set the Content-Type header", function () {
+		expect(headers["Content-Type"]).toBe("application/json;charset=UTF-8");
+	});
+}
+
+function runOnBeforeSendCallbackTestsForPostPutDel(methodName, verb) {
+	describe("calls the onBeforeSend callback", function () {
+		var onBeforeSendCalled, passedRequest, passedVerb, passedUrl;
+		beforeAll(function (done) {
+			ajax[methodName](exampleUrl, null, {
+				onBeforeSend: function (request, verb, url) {
+					onSendCalled = true;
+					passedRequest = request;
+					passedVerb = verb;
+					passedUrl = url;
+				}
+			}).then(done, fail);
+		});
+
+		it("when one is provided", function () {
+			expect(onSendCalled).toBe(true);
+		});
+
+		it("with a request object as the first parameter", function () {
+			// Good enough test that it's the XHR object.
+			expect(typeof passedRequest.onreadystatechange).toBe("function");
+		});
+
+		it("with the " + verb + " verb as the second parameter", function () {
+			expect(passedVerb).toBe(verb);
+		});
+
+		it("with the URL as the third parameter", function () {
+			expect(passedUrl).toBe(exampleUrl);
+		});
+	});
+}
+
+function runPassedParametersTestsForPostPutDel(methodName, verb) {
+	describe("when passed parameters", function () {
+		beforeAll(function (done) {
+			ajax[methodName](exampleUrl, {foo: "bar baz"})
+				.then(done, fail);
+		});
+
+		it("does not encode them into the URL query string", function () {
+			expect(openedUrl).toBe(exampleUrl);
+		});
+
+		it("passes them as a JSON-encoded payload", function () {
+			expect(passedPayload).toBe("{\"foo\":\"bar baz\"}");
+		});
+	});
+}
+
 describe("The post method", function () {
 	it("works", function (done) {
 		ajax.post(exampleUrl)
 			.then(done, fail);
 	});
+
+	runContentTypeHeaderTestsForPostPutDel();
+	runBasicTests("POST");
+	runOnBeforeSendCallbackTestsForPostPutDel("post", "POST");
+	runPassedParametersTestsForPostPutDel("post", "POST");
 });
 
 
@@ -125,6 +190,11 @@ describe("The put method", function () {
 		ajax.put(exampleUrl)
 			.then(done, fail);
 	});
+
+	runContentTypeHeaderTestsForPostPutDel();
+	runBasicTests("PUT");
+	runOnBeforeSendCallbackTestsForPostPutDel("put", "PUT");
+	runPassedParametersTestsForPostPutDel("put", "PUT");
 });
 
 describe("The del method", function () {
@@ -132,4 +202,9 @@ describe("The del method", function () {
 		ajax.del(exampleUrl)
 			.then(done, fail);
 	});
+
+	runContentTypeHeaderTestsForPostPutDel();
+	runBasicTests("DELETE");
+	runOnBeforeSendCallbackTestsForPostPutDel("del", "DELETE");
+	runPassedParametersTestsForPostPutDel("del", "DELETE");
 });
