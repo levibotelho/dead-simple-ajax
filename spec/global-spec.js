@@ -2,44 +2,35 @@ var proxyquire = require("proxyquire");
 
 var exampleUrl = "http://www.example.com";
 
-// Returns an ajax instance that has the underlying XMLHttpRequest stubbed.
-// We have to be a bit "creative" about how we do this because proxyquiring
-// several times leads to some unexpected side effects.
-function getStubbedAjax(stub) {
-	return proxyquire("../index.js", {
-		xmlhttprequest: {
-			"XMLHttpRequest": function () {
-				if (stub != null) {
-					for (var method in stub) {
-						this[method] = stub[method];
-					}
-				}
-			}
-		}
-	});
-}
-
-describe("The get method", function () {
-	var ajax, wasOpenCalled, wasSendCalled, headers = {}, calledVerb, openedUrl, openedAsync, passedPayload;
-	beforeAll(function (done) {
-		ajax = getStubbedAjax({
-			open: function (verb, url, async) {
+// We only stub xmlhttprequest once because doing so for each test leads to some weird results.
+var wasOpenCalled, wasSendCalled, headers = {}, calledVerb, openedUrl, openedAsync, passedPayload;
+var ajax = proxyquire("../index.js", {
+	xmlhttprequest: {
+		"XMLHttpRequest": function () {
+			this.open = function (verb, url, async) {
 				wasOpenCalled = true;
 				calledVerb = verb;
 				openedUrl = url;
 				openedAsync = async;
-			},
-			send: function (payload) {
+			};
+
+			this.send = function (payload) {
 				wasSendCalled = true;
 				this.readyState = 4;
 				this.status = 200;
 				this.onreadystatechange();
 				passedPayload = payload;
-			},
-			setRequestHeader: function (key, value) {
+			};
+
+			this.setRequestHeader = function (key, value) {
 				headers[key] = value;
-			}
-		});
+			};
+		}
+	}
+});
+
+describe("The get method", function () {
+	beforeAll(function (done) {
 		ajax.get(exampleUrl)
 			.then(done, fail);
 	});
@@ -123,7 +114,6 @@ describe("The get method", function () {
 
 describe("The post method", function () {
 	it("works", function (done) {
-		var ajax = getStubbedAjax();
 		ajax.post(exampleUrl)
 			.then(done, fail);
 	});
@@ -132,7 +122,6 @@ describe("The post method", function () {
 
 describe("The put method", function () {
 	it("works", function (done) {
-		var ajax = getStubbedAjax();
 		ajax.put(exampleUrl)
 			.then(done, fail);
 	});
@@ -140,7 +129,6 @@ describe("The put method", function () {
 
 describe("The del method", function () {
 	it("works", function (done) {
-		var ajax = getStubbedAjax();
 		ajax.del(exampleUrl)
 			.then(done, fail);
 	});
