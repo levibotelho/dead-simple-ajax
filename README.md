@@ -1,4 +1,4 @@
-# dead-simple-ajax [![Build Status](https://travis-ci.org/levibotelho/dead-simple-ajax.svg?branch=master)](https://travis-ci.org/levibotelho/dead-simple-ajax)
+# dead-simple-ajax [![Build Status](https://travis-ci.org/levibotelho/dead-simple-ajax.svg?branch=master)](https://travis-ci.org/levibotelho/dead-simple-ajax) [![NPM](https://nodei.co/npm/dead-simple-ajax.png)](https://npmjs.org/package/dead-simple-ajax)
 
 dead-simple-ajax does three things:
 
