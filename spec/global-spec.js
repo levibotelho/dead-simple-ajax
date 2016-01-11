@@ -1,17 +1,12 @@
 var proxyquire = require("proxyquire");
 
+var exampleUrl = "http://www.example.com";
+
 // Returns an ajax instance that has the underlying XMLHttpRequest stubbed.
 function getStubbedAjax(stub) {
 	proxyquire("../index.js", {
 		xmlhttprequest: {
 			"XMLHttpRequest": function () {
-				this.open = function () {};
-				this.send = function () {};
-				this.setRequestHeader = function () {
-					this.readyState = 4;
-					this.status = 200;
-					this.onreadystatechange();
-				};
 				if (stub != null) {
 					for (var method in stub) {
 						this[method] = stub[method];
@@ -24,17 +19,50 @@ function getStubbedAjax(stub) {
 }
 
 describe("The get method", function () {
-	it("works", function (done) {
-		var ajax = getStubbedAjax();
-		ajax.get("http://www.example.com")
+	var ajax, stub, wasOpenCalled, wasSendCalled, headers = {};
+	beforeAll(function (done) {
+		stub = {
+			open: function () {
+				wasOpenCalled = true;
+			},
+			send: function () {
+				wasSendCalled = true;
+				this.readyState = 4;
+				this.status = 200;
+				this.onreadystatechange();
+			},
+			setRequestHeader: function (key, value) {
+				headers[key] = value;
+			}
+		};
+		ajax = getStubbedAjax(stub);
+		ajax.get(exampleUrl)
 			.then(done, fail);
+	});
+
+	it("works", function () {});
+
+	it("opens the web request", function () {
+		expect(wasSendCalled).toBe(true);
+	});
+
+	it("sends the web request", function () {
+		expect(wasOpenCalled).toBe(true);
+	});
+
+	it("sets the Accept header to JSON", function () {
+		expect(headers.Accept).toBe("application/json");
+	});
+
+	it("does not set the Content-Type header", function () {
+		expect(headers["Content-Type"]).toBe(undefined);
 	});
 });
 
 describe("The post method", function () {
 	it("works", function (done) {
 		var ajax = getStubbedAjax();
-		ajax.post("http://www.example.com")
+		ajax.post(exampleUrl)
 			.then(done, fail);
 	});
 });
@@ -43,7 +71,7 @@ describe("The post method", function () {
 describe("The put method", function () {
 	it("works", function (done) {
 		var ajax = getStubbedAjax();
-		ajax.put("http://www.example.com")
+		ajax.put(exampleUrl)
 			.then(done, fail);
 	});
 });
@@ -51,7 +79,7 @@ describe("The put method", function () {
 describe("The del method", function () {
 	it("works", function (done) {
 		var ajax = getStubbedAjax();
-		ajax.del("http://www.example.com")
+		ajax.del(exampleUrl)
 			.then(done, fail);
 	});
 });

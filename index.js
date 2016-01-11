@@ -11,7 +11,6 @@ function generateQueryString(payload) {
 	if (payload == null) {
 		return null;
 	}
-
 	var queryString = "";
 	for (var key in payload) {
 		queryString += encodeURIComponent(key);
@@ -28,7 +27,6 @@ function wrapRequestInPromise(request, returnRawResponse) {
 			if (request.readyState !== 4) {
 				return;
 			}
-
 			if (request.status >= 200 && request.status < 300) {
 				if (returnRawResponse) {
 					resolve(request.responseText);
@@ -65,7 +63,9 @@ function sendRequest(verb, url, encodedPayload, options) {
 
 	var jsonMIMEType = "application/json";
 	request.setRequestHeader("Accept", jsonMIMEType);
-	request.setRequestHeader("Content-Type", jsonMIMEType + ";charset=UTF-8");
+	if (verb !== "GET") {
+		request.setRequestHeader("Content-Type", jsonMIMEType + ";charset=UTF-8");
+	}
 	if (typeof onBeforeSend === "function") {
 		onBeforeSend(request, verb, url)
 	}
