@@ -3,8 +3,10 @@ var proxyquire = require("proxyquire");
 var exampleUrl = "http://www.example.com";
 
 // Returns an ajax instance that has the underlying XMLHttpRequest stubbed.
+// We have to be a bit "creative" about how we do this because proxyquiring
+// several times leads to some unexpected side effects.
 function getStubbedAjax(stub) {
-	proxyquire("../index.js", {
+	return proxyquire("../index.js", {
 		xmlhttprequest: {
 			"XMLHttpRequest": function () {
 				if (stub != null) {
@@ -15,30 +17,29 @@ function getStubbedAjax(stub) {
 			}
 		}
 	});
-	return require("../index.js");
 }
 
 describe("The get method", function () {
-	var wasOpenCalled, wasSendCalled, headers = {}, calledVerb, targetUrl, openedAsync;
+	var ajax, wasOpenCalled, wasSendCalled, headers = {}, calledVerb, openedUrl, openedAsync, passedPayload;
 	beforeAll(function (done) {
-		var stub = {
+		ajax = getStubbedAjax({
 			open: function (verb, url, async) {
 				wasOpenCalled = true;
 				calledVerb = verb;
-				targetUrl = url;
+				openedUrl = url;
 				openedAsync = async;
 			},
-			send: function () {
+			send: function (payload) {
 				wasSendCalled = true;
 				this.readyState = 4;
 				this.status = 200;
 				this.onreadystatechange();
+				passedPayload = payload;
 			},
 			setRequestHeader: function (key, value) {
 				headers[key] = value;
 			}
-		};
-		var ajax = getStubbedAjax(stub);
+		});
 		ajax.get(exampleUrl)
 			.then(done, fail);
 	});
@@ -66,7 +67,7 @@ describe("The get method", function () {
 	});
 
 	it("opens the connection to the correct URL", function () {
-		expect(targetUrl).toBe(exampleUrl);
+		expect(openedUrl).toBe(exampleUrl);
 	});
 
 	it("opens the connection as async", function () {
@@ -76,12 +77,6 @@ describe("The get method", function () {
 	describe("calls the onBeforeSend callback", function () {
 		var onBeforeSendCalled, passedRequest, passedVerb, passedUrl;
 		beforeAll(function (done) {
-			var stub = {
-				open: function () {},
-				send: function () {},
-				setRequestHeader: function () {}
-			};
-			var ajax = getStubbedAjax(stub);
 			ajax.get(exampleUrl, null, {
 				onBeforeSend: function (request, verb, url) {
 					onSendCalled = true;
@@ -111,30 +106,17 @@ describe("The get method", function () {
 	});
 
 	describe("when passed parameters", function () {
-		var baseUrl = exampleUrl;
-		var openedUrl, passedPayload;
 		beforeAll(function (done) {
-			var stub = {
-				open: function (verb, url) {
-					console.log("open results:" + verb + " " + url);
-					openedUrl = url;
-				},
-				send: function (payload) {
-					passedPayload = payload;
-				},
-				setRequestHeader: function () {}
-			};
-			var ajax = getStubbedAjax(stub);
-			ajax.get(baseUrl, {foo: "bar baz"})
+			ajax.get(exampleUrl, {foo: "bar baz"})
 				.then(done, fail);
 		});
 
 		it("encodes them into the URL query string", function () {
-			expect(openedUrl).toBe(baseUrl + "?bar%20baz");
+			expect(openedUrl).toBe(exampleUrl + "?foo=bar%20baz");
 		});
 
 		it("does not pass them as a payload", function () {
-			expect(typeof payload).toBe("undefined");
+			expect(passedPayload).toBe(null);
 		});
 	});
 });
