@@ -19,6 +19,7 @@
     "url": "https://github.com/LeviBotelho/dead-simple-ajax/issues"
   },
   "homepage": "https://github.com/LeviBotelho/dead-simple-ajax#readme",
+  "typings": "./index.d.ts",
   "dependencies": {
     "xmlhttprequest": "^1.8.0"
   },
