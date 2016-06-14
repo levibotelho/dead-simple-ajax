@@ -1,6 +1,6 @@
 {
   "name": "dead-simple-ajax",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ajax. That's it.",
   "main": "index.js",
   "repository": {
